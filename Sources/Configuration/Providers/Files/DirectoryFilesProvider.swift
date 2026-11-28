@@ -19,6 +19,10 @@ public import Foundation
 #endif
 public import SystemPackage
 
+#if Logging
+import Logging
+#endif
+
 /// A configuration provider that reads values from individual files in a directory.
 ///
 /// This provider reads configuration values from a directory where each file represents
@@ -232,6 +236,12 @@ public struct DirectoryFilesProvider: Sendable {
         if let loadedFileNames {
             fileNames = loadedFileNames
         } else if allowMissing {
+            #if Logging
+            Logger(label: "DirectoryFilesProvider")
+                .warning(
+                    "Configuration directory at '\(directoryPath)' is missing; continuing with an empty configuration."
+                )
+            #endif
             fileNames = []
         } else {
             throw FileSystemError.directoryNotFound(path: directoryPath)
